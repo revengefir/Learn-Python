@@ -1,2 +1,2 @@
 ## Learn-Python
-Мой первый проект на Django, создаётся как итоговый в 9ом классе. Сайт предназначен для решения различных задачек для изучения ЯП Python.
+WebSite for learning Python. My first project on Django.
