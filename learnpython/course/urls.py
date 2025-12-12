@@ -25,6 +25,7 @@ urlpatterns = [
 
     #user app
     path("", include("user.urls")),
+    path("playground", include("playground.urls")),
     path("login/", user_view.Login, name="login"),
     path("logout/", auth.LogoutView.as_view(template_name = "user/index.html"), name = "logout"),
     path("register/", user_view.register, name = "register"),
