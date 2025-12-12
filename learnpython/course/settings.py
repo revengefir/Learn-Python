@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'user',
+    'playground',
     'crispy_forms',
     "crispy_bootstrap4",
     'django.contrib.admin',
