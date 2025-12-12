@@ -84,18 +84,8 @@
   <br/>
   <br>
   <br>
-  <div class="row">
-    {% block start %}
-    {% if user.is_authenticated %}
-    <center>
-      <h1>Добро пожаловать {{user.username}}!</h1>
-      <a href="\playground">Перейти к изучению!</a>
-    </center>
-    {% else %}
-    <center><h1>Зарегистрируйтесь!</h1></center>
-    {% endif %}
-    {% endblock %}
-  </div>
+  {% block content%}
+  {% endblock %}
 </body>
 
 </html>

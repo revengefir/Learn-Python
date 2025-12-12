@@ -14,14 +14,14 @@ def execute_code(code):
         output = f"Error: {str(e)} \n {traceback.format_exc()}"
     return output
 
-def index(request):
-    return render(request, 'editcode.html')
+def codeedit(request):
+    return render(request, 'playground/codeedit.html')
 
 def runcode(request):
     if request.method == "POST":
         codeareadata =  request.POST['codearea']
         output = execute_code(codeareadata)
-        return render(request, 'index.html', {"code": codeareadata, "output": output})
+        return render(request, 'playground/codeedit.html', {"code": codeareadata, "output": output})
     else:
         return HttpResponse("Method not allowed", status = 405)
 
