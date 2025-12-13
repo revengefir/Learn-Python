@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
     path('', views.codeedit, name="codeedit"),
     path('runcode', views.runcode, name="runcode"),
+    path('<int:course>', views.course, name="list")
 ]

@@ -24,4 +24,7 @@ def runcode(request):
         return render(request, 'playground/codeedit.html', {"code": codeareadata, "output": output})
     else:
         return HttpResponse("Method not allowed", status = 405)
+    
+def course(request):
+    return render(request, 'playground/codeedit.html')
 
