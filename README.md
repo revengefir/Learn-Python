@@ -1,2 +1,2 @@
 ## Learn-Python
-WebSite for learning Python. My first project on Django.
+WebSite for coding on Python in browser. My first project on Django.
