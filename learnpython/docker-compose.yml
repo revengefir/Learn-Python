@@ -8,9 +8,9 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
 
     volumes:
-      - .:/app
+      - .:/learnpython
 
-    working-dir: /app
+    working-dir: /learnpython
 
     ports:
       - "8000:8000"
