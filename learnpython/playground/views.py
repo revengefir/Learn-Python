@@ -15,7 +15,7 @@ def execute_code(code):
     return output
 
 def codeedit(request):
-    return render(request, 'playground/codeedit.html')
+    return render(request, 'playground/codeedit.html', {'title': 'Среда разработки'})
 
 def runcode(request):
     if request.method == "POST":

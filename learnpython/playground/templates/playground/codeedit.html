@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Learn-Python Compiler</title>
+    <title>Learn-Python среда разработки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/python/python.min.js"></script>
@@ -43,7 +43,7 @@
             height: 300px;
             font-size: 16px;
             width: 100%;
-            border: 1px solid green;
+            border: 1px solid gray;
             border-radius: 5px;
             padding: 12px;
             margin-bottom: 24px;
@@ -56,7 +56,7 @@
         }
 
         button {
-            color: red;
+            color: green;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -72,20 +72,20 @@
     </style>
 </head>
 <body> 
-    <h2 style="font-family: 'Times New Roman', Times, serif; "> <strong style="color: green;">Learn-Python</strong> Compiler</h2>
+    <h2 style="font-family: 'Times New Roman', Times, serif; "> <strong style="color: gray;">Learn-Python</strong> Среда разработки</h2>
     <form action="runcode" method="post">
         {% csrf_token %}
         <div>
-            <label for="codearea">Code Area</label>
+            <label for="codearea">Код</label>
             <textarea id="codearea" name="codearea" rows="10" >{{ code }}</textarea>
         </div>
         <hr>
         <div>
-            <label for="output">Output</label>
+            <label for="output">Консоль</label>
             <textarea id="output" name="output" rows="4" disabled>{{ output }}</textarea>
         </div>
 
-        <button type="submit">Run Code</button>
+        <button type="submit" class="btn btn-success">Запустить</button>
     </form>
 
     <script>

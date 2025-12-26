@@ -67,7 +67,7 @@
         </div>
         <div class="collapse navbar-collapse" id="mainNavBar">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{% url "index" %}">Главная</a></li>
+            <li><a href="{% url "index" %}"><i class="fa fa-home"></i> Главная</a></li>
 
             {% if user.is_authenticated %}
             {% else %}
@@ -88,10 +88,13 @@
     {% if user.is_authenticated %}
     <center>
       <h1>Добро пожаловать {{user.username}}!</h1>
-      <a href="\playground">Перейти к изучению!</a>
+      <a id= "button" href="\playground" class="btn btn-success btn-lg">Перейти к практике!</a></button>
     </center>
     {% else %}
-    <center><h1>Зарегистрируйтесь!</h1></center>
+    <center><h1>Learn-Python</h1>
+      <p>Простой вебсайт, предоставляющий среду для практики языка программирования Python.</p>
+      <a id= "button" href="{% url "register" %}" class="btn btn-success btn-lg">Зарегистрироваться</a></button>
+    </center>
     {% endif %}
     {% endblock %}
   </div>

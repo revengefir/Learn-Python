@@ -9,7 +9,7 @@ from django.template.loader import get_template
 from django.template import Context
 
 def index(request):
-    return render(request, 'user/index.html', {'title': 'index'})
+    return render(request, 'user/index.html', {'title': 'Главная'})
 
 def register(request):
     if request.method == "POST":
@@ -31,7 +31,7 @@ def register(request):
             return redirect("login")
     else: 
         form = UserRegisterForm()
-    return render(request, 'user/register.html', {'form': form, 'title': "Registration"})
+    return render(request, 'user/register.html', {'form': form, 'title': "Регистрация"})
 
 def Login(request):
     if request.method == "POST":
@@ -45,4 +45,4 @@ def Login(request):
         else:
             messages.info(request, f'Account not found!')
     form = AuthenticationForm()
-    return render(request,'user/login.html', {'form': form, 'title': 'Login'})
+    return render(request,'user/login.html', {'form': form, 'title': 'Авторизация'})
