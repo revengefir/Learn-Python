@@ -67,13 +67,12 @@
         </div>
         <div class="collapse navbar-collapse" id="mainNavBar">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="{% url "index" %}">Home</a></li>
+            <li><a href="{% url "index" %}">Главная</a></li>
 
             {% if user.is_authenticated %}
-            <li><a href="{% url "logout" %}"><span class="glyphicon glyphicon-log-out"></span>   Logout</a></li>
             {% else %}
-            <li><a href="{% url "register" %}"><span class="glyphicon glyphicon-user"></span>   Sign up</a></li>
-            <li><a href="{% url "login" %}"><span class="glyphicon glyphicon-log-in"></span>   Log in</a></li>
+            <li><a href="{% url "register" %}"><span class="glyphicon glyphicon-user"></span>   Регистрация</a></li>
+            <li><a href="{% url "login" %}"><span class="glyphicon glyphicon-log-in"></span>   Вход</a></li>
             {% endif %}
 
           </ul>
