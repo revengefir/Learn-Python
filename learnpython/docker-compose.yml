@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/learnpython
 
-    working-dir: /learnpython
+    working_dir: /learnpython
 
     ports:
       - "8000:8000"
