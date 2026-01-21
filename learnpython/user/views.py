@@ -40,9 +40,9 @@ def Login(request):
         user = authenticate(request, username = username, password = password)
         if user is not None:
             form = login(request,user)
-            messages.success(request, f'Welcome {username}!')
+            messages.success(request, f'Добро пожаловать {username}!')
             return redirect('index')
         else:
-            messages.info(request, f'Account not found!')
+            messages.info(request, f'Аккаунт не найден!')
     form = AuthenticationForm()
     return render(request,'user/login.html', {'form': form, 'title': 'Авторизация'})

@@ -1,7 +1,6 @@
 {% extends "user/layout.html" %}
 {% block content %}
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,6 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -35,7 +37,6 @@
             margin-bottom: 12px;
             font-weight: bold;
             color: black;
-            font-family: 'Times New Roman', Times, serif;
         }
 
         #codearea,
@@ -72,7 +73,7 @@
     </style>
 </head>
 <body> 
-    <h2 style="font-family: 'Times New Roman', Times, serif; "> <strong style="color: gray;">Learn-Python</strong> Среда разработки</h2>
+    <h2> <strong style="color: gray;">Learn-Python</strong></h2>
     <form action="runcode" method="post">
         {% csrf_token %}
         <div>

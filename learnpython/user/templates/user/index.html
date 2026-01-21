@@ -1,36 +1,26 @@
 {% load static %}
 {% load crispy_forms_tags %}
 <!DOCTYPE html>
-<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="title" content="project">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="language" content="English">
-  <meta name="author" content="vinayak sharma">
 
   <title>{{title}}</title>
 
 
-  <!-- bootstrap file -->
+  <!-- Подгрузка BootStrap и FontAwesome -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <!-- bootstrap file-->
-
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
-  <!-- main css -->
+<!-- Подгрузка CSS -->
   <link rel="stylesheet" type="text/css" href="{% static "index.css" %}" />
 
-
-  <!-- message here -->
 
   {% if messages %}
   {% for message in messages %}
@@ -42,9 +32,6 @@
   {% endfor %}
   {% endif %}
 
-  <!--_______________________________________________-->
-
-
 
 </head>
 
@@ -53,7 +40,7 @@
 
   <header class="row">
 
-    <!-- navbar-->
+    <!-- Навигация -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -87,13 +74,19 @@
     {% block start %}
     {% if user.is_authenticated %}
     <center>
-      <h1>Добро пожаловать {{user.username}}!</h1>
-      <a id= "button" href="\playground" class="btn btn-success btn-lg">Перейти к практике!</a></button>
+      <div style="border-style: solid; border-color: gray; height: 300px; width: 50%;">
+      <h1>Добро пожаловать на Learn-Python, {{user.username}}!</h1>
+      <p style="font-size: x-large; max-width: 50%;">Нажмите на кнопку ниже, дабы попасть в среду.</p>
+      <a id= "button" href="\playground" class="btn btn-success btn-lg" style="margin-top: 50px;">Перейти к практике!</a></button>
+      </div>
     </center>
     {% else %}
-    <center><h1>Learn-Python</h1>
-      <p>Простой вебсайт, предоставляющий среду для практики языка программирования Python.</p>
-      <a id= "button" href="{% url "register" %}" class="btn btn-success btn-lg">Зарегистрироваться</a></button>
+    <center>
+      <div style="border-style: solid; border-color: gray; height: 325px; width: 50%;">
+      <h1>Learn-Python</h1>
+      <p style="font-size: x-large; max-width: 50%;">Простой вебсайт, предоставляющий среду для практики языка программирования Python.</p>
+      <a id= "button" href="{% url "register" %}" class="btn btn-success btn-lg" style="margin-top: 50px;">Зарегистрироваться</a></button>
+      </div>
     </center>
     {% endif %}
     {% endblock %}
