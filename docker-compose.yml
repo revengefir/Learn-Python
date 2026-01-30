@@ -10,6 +10,7 @@ services:
     - ./.env.dev
   depends_on:
     - db
+  restart: unless-stopped
  db:
    image: postgres:15
    volumes:
@@ -18,12 +19,14 @@ services:
     - POSTGRES_USER=fir
     - POSTGRES_PASSWORD=uggtiueblantvar
     - POSTGRES_DB=learnpython
+   restart: unless-stopped
  nginx:
    build: ./nginx
    ports:
      - 1337:80
    depends_on:
      - web
+   restart: unless-stopped
 
 volumes:
   postgres_data:
