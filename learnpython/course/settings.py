@@ -28,6 +28,7 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
+CSRF_TRUSTED_ORIGINS = ["https://python.kappacraft.xyz", "http://192.168.50.250:1337", "https://*"]
 # Application definition
 
 INSTALLED_APPS = [
