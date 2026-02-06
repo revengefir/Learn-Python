@@ -1,4 +1,4 @@
-FROM python:3.11.14-slim-bookworm
+FROM python:3.14.3-slim-trixie
 
 WORKDIR /usr/www/learnpython
 
