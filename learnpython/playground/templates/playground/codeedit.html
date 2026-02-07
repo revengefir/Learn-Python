@@ -63,7 +63,9 @@ runBtn.onclick = async () => {
         const data = await response.json();
         const sessionId = data.session_id;
 
-        socket = new WebSocket(`ws://${window.location.host}/ws/run/${sessionId}/`);
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+	socket = new WebSocket(`${protocol}://${window.location.host}/ws/run/${sessionId}/`);
+
 
         socket.onmessage = (event) => {
             const msg = JSON.parse(event.data);
