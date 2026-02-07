@@ -1,7 +1,7 @@
-from django.urls import path, include
-from . import views
+from django.urls import path
+from .views import codeedit, runcode
 
 urlpatterns = [
-    path('', views.codeedit, name="codeedit"),
-    path('runcode', views.runcode, name="runcode"),
+    path("", codeedit, name="playground"),   # /playground/
+    path("run", runcode, name="run"),        # /playground/run/
 ]

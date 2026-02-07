@@ -1,102 +1,107 @@
 {% extends "user/layout.html" %}
 {% block content %}
-<!DOCTYPE html>
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Learn-Python среда разработки</title>
+    <title>Learn-Python IDE</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/mode/python/python.min.js"></script>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f7;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        form {
-            width: 100%;
-            max-width: 800px;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: bold;
-            color: black;
-        }
-
-        #codearea,
-        #output {
-            height: 300px;
-            font-size: 16px;
-            width: 100%;
-            border: 1px solid gray;
-            border-radius: 5px;
-            padding: 12px;
-            margin-bottom: 24px;
-            resize: vertical;
-        }
-
-        #output {
-            height: 150px;
-            padding: 5px;
-        }
-
-        button {
-            color: green;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 1px solid green;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        button:hover {
-            background-color: #388e3c;
-            color: white;
-        }
+        body { background-color: #f0f4f7; display: flex; justify-content: center; min-height: 100vh; font-family: Arial, sans-serif; }
+        .container { max-width: 900px; background: white; padding: 25px; border-radius: 10px; margin-top: 30px; }
+        #console { background: black; color: #0f0; height: 300px; overflow-y: auto; padding: 10px; font-family: monospace; white-space: pre-wrap; border-radius: 5px; outline: none; }
     </style>
 </head>
-<body> 
-    <h2> <strong style="color: gray;">Learn-Python</strong></h2>
-    <form action="runcode" method="post">
-        {% csrf_token %}
-        <div>
-            <label for="codearea">Код</label>
-            <textarea id="codearea" name="codearea" rows="10" >{{ code }}</textarea>
-        </div>
-        <hr>
-        <div>
-            <label for="output">Консоль</label>
-            <textarea id="output" name="output" rows="4" disabled>{{ output }}</textarea>
-        </div>
 
-        <button type="submit" class="btn btn-success">Запустить</button>
-    </form>
+<div class="container">
+    <h3 style="color: gray;">Learn-Python</h3>
+    <label>Код</label>
+    <textarea id="codearea">{{ code|default:"" }}</textarea>
+    <hr>
+    <label>Консоль</label>
+    <div id="console" contenteditable="true"></div>
+    <button id="runBtn" class="btn btn-success">Запустить</button>
+</div>
 
-    <script>
-        var codeEditor = CodeMirror.fromTextArea(document.getElementById("codearea"), {
-            mode: "python",
-            lineNumbers: true,
-            indentUnit: 4,
-            extraKeys: { Tab: "indentMore", "Shift-Tab": "indentLess" },
+<script>
+const editor = CodeMirror.fromTextArea(
+    document.getElementById("codearea"),
+    { mode: "python", lineNumbers: true, indentUnit: 4 }
+);
+
+const consoleDiv = document.getElementById("console");
+const runBtn = document.getElementById("runBtn");
+let socket = null;
+let inputBuffer = "";
+
+// Вывод в консоль
+function appendOutput(text) {
+    consoleDiv.textContent += text;
+    consoleDiv.scrollTop = consoleDiv.scrollHeight;
+}
+
+// Запуск кода
+runBtn.onclick = async () => {
+    consoleDiv.textContent = "";
+    inputBuffer = "";
+
+    try {
+        const response = await fetch("/playground/run", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ code: editor.getValue() })
         });
-    </script>
-</body>
-</html>
+
+        const data = await response.json();
+        const sessionId = data.session_id;
+
+        socket = new WebSocket(`ws://${window.location.host}/ws/run/${sessionId}/`);
+
+        socket.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+
+            if (msg.type === "output") appendOutput(msg.data);
+            if (msg.type === "exit") appendOutput("\n[program finished]");
+        };
+
+        socket.onerror = () => appendOutput("\n[WebSocket error]");
+
+    } catch (err) {
+        appendOutput("[Fetch error] " + err);
+    }
+};
+
+// Ввод пользователя для input()
+consoleDiv.addEventListener("keydown", (e) => {
+    if (!socket || socket.readyState !== 1) return;
+
+    if (e.key === "Enter") {
+        e.preventDefault();
+        socket.send(inputBuffer); // отправляем ввод Python
+        inputBuffer = "";          // очищаем буфер
+        // НЕ выводим в консоль то, что вводит пользователь
+    } else if (e.key === "Backspace") {
+        e.preventDefault();
+        inputBuffer = inputBuffer.slice(0, -1);
+        // НЕ трогаем консоль
+    } else if (e.key.length === 1) {
+        e.preventDefault();
+        inputBuffer += e.key;
+        // НЕ выводим символ в консоль
+    }
+});
+</script>
+
+
+
 {% endblock %}
+
+

@@ -1,32 +1,61 @@
 services:
- web:
-  build: ./learnpython
-  command: gunicorn course.wsgi:application --bind 0.0.0.0:8000
-  volumes:
-    - ./learnpython:/usr/www/learnpython/
-  expose:
-    - 8000
-  env_file:
-    - ./.env.dev
-  depends_on:
-    - db
-  restart: unless-stopped
- db:
-   image: postgres:15
-   volumes:
-    - postgres_data:/var/lib/postgresql/data/
-   environment:
-    - POSTGRES_USER=fir
-    - POSTGRES_PASSWORD=uggtiueblantvar
-    - POSTGRES_DB=learnpython
-   restart: unless-stopped
- nginx:
-   build: ./nginx
-   ports:
-     - 1337:80
-   depends_on:
-     - web
-   restart: unless-stopped
+  web:
+    build: ./learnpython
+    command: uvicorn course.asgi:application --host 0.0.0.0 --port 8000
+    volumes:
+      - ./learnpython:/usr/www/learnpython/
+    expose:
+      - 8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - executor
+    restart: unless-stopped
+    networks:
+      - backend
+
+  executor:
+    build: ./executor
+    command: uvicorn main:app --host 0.0.0.0 --port 8080
+    expose:
+      - 8080
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    networks:
+      - backend
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=fir
+      - POSTGRES_PASSWORD=uggtiueblantvar
+      - POSTGRES_DB=learnpython
+    expose:
+      - 5432
+    restart: unless-stopped
+    networks:
+      - backend
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - backend
 
 volumes:
   postgres_data:
+
+networks:
+  backend:
+    driver: bridge

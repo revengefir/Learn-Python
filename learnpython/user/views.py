@@ -21,7 +21,7 @@ def register(request):
 
             htmly = get_template('user/Email.html')
             d = {"username": username}
-            subject, from_email, to = "welcome", 'topvovanplay23@gmail.com', email
+            subject, from_email, to = "Добро пожаловать!", 'service@kappacraft.xyz', email
             html_content = htmly.render(d)
             msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
             msg.attach_alternative(html_content, "text/html")
