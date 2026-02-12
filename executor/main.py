@@ -11,7 +11,7 @@ import signal
 
 app = FastAPI()
 
-# Разрешаем фронтенд
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 sessions = {}
-MAX_EXECUTION_TIME = 10  # секунда таймаут для бесконечных циклов
+MAX_EXECUTION_TIME = 10  # Execution limit
 
 
 @app.post("/run")
@@ -73,7 +73,7 @@ async def ws_run(ws: WebSocket, session_id: str):
             # Таймаут на бесконечные циклы
             if asyncio.get_event_loop().time() - start_time > MAX_EXECUTION_TIME:
                 os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                await ws.send_json({"type": "output", "data": "\n[ERROR] Execution timeout"})
+                await ws.send_json({"type": "output", "data": "\n[ОШИБКА] Лимит времени на исполнение превышен"})
                 break
 
             # Проверка вывода

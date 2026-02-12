@@ -71,10 +71,10 @@ runBtn.onclick = async () => {
             const msg = JSON.parse(event.data);
 
             if (msg.type === "output") appendOutput(msg.data);
-            if (msg.type === "exit") appendOutput("\n[program finished]");
+            if (msg.type === "exit") appendOutput("\n[Исполнение программы завершено]");
         };
 
-        socket.onerror = () => appendOutput("\n[WebSocket error]");
+        socket.onerror = () => appendOutput("\n[Ошибка WebSocket]");
 
     } catch (err) {
         appendOutput("[Fetch error] " + err);
