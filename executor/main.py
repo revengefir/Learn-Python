@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 sessions = {}
-MAX_EXECUTION_TIME = 10  # Execution limit
+MAX_EXECUTION_TIME = 60  # Execution limit(in seconds)
 
 
 @app.post("/run")
@@ -29,7 +29,7 @@ async def run_code(payload: dict):
     code = payload.get("code", "")
     session_id = str(uuid.uuid4())
 
-    # Сохраняем код в tmp файл
+    # Saving code to the tmp
     os.makedirs(f"/tmp/{session_id}", exist_ok=True)
     code_path = f"/tmp/{session_id}/main.py"
     with open(code_path, "w") as f:
@@ -42,7 +42,7 @@ async def run_code(payload: dict):
         stdin=slave,
         stdout=slave,
         stderr=slave,
-        preexec_fn=os.setsid  # чтобы можно было убить процесс и все дочерние
+        preexec_fn=os.setsid  # ability to kill the program
     )
 
     sessions[session_id] = {
@@ -70,26 +70,26 @@ async def ws_run(ws: WebSocket, session_id: str):
 
     try:
         while True:
-            # Таймаут на бесконечные циклы
+            # Timeout check
             if asyncio.get_event_loop().time() - start_time > MAX_EXECUTION_TIME:
                 os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
                 await ws.send_json({"type": "output", "data": "\n[ОШИБКА] Лимит времени на исполнение превышен"})
                 break
 
-            # Проверка вывода
+            # Output check
             rlist, _, _ = select.select([master_fd], [], [], 0.05)
             if rlist:
                 try:
                     output = os.read(master_fd, 1024).decode()
                     if output:
                         await ws.send_json({"type": "output", "data": output})
-                        # Если Python ждёт input, помечаем
+                        # Input check
                         if output.strip().endswith(":"):
                             session["waiting_input"] = True
                 except OSError:
                     pass
 
-            # Получаем ввод пользователя
+            # Getting user input
             if session["waiting_input"]:
                 try:
                     msg = await asyncio.wait_for(ws.receive_text(), timeout=0.05)
@@ -100,7 +100,7 @@ async def ws_run(ws: WebSocket, session_id: str):
                 except WebSocketDisconnect:
                     break
 
-            # Проверка завершения процесса
+            # Process end check
             if proc.poll() is not None:
                 break
 
