@@ -39,13 +39,13 @@ const runBtn = document.getElementById("runBtn");
 let socket = null;
 let inputBuffer = "";
 
-// Вывод в консоль
+// Console output
 function appendOutput(text) {
     consoleDiv.textContent += text;
     consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
-// Запуск кода
+// Code execution
 runBtn.onclick = async () => {
     consoleDiv.textContent = "";
     inputBuffer = "";
@@ -81,23 +81,20 @@ runBtn.onclick = async () => {
     }
 };
 
-// Ввод пользователя для input()
+// User input
 consoleDiv.addEventListener("keydown", (e) => {
     if (!socket || socket.readyState !== 1) return;
 
     if (e.key === "Enter") {
         e.preventDefault();
-        socket.send(inputBuffer); // отправляем ввод Python
-        inputBuffer = "";          // очищаем буфер
-        // НЕ выводим в консоль то, что вводит пользователь
+        socket.send(inputBuffer); 
+        inputBuffer = "";          
     } else if (e.key === "Backspace") {
         e.preventDefault();
         inputBuffer = inputBuffer.slice(0, -1);
-        // НЕ трогаем консоль
     } else if (e.key.length === 1) {
         e.preventDefault();
         inputBuffer += e.key;
-        // НЕ выводим символ в консоль
     }
 });
 </script>
