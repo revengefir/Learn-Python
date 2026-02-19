@@ -34,9 +34,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=fir
-      - POSTGRES_PASSWORD=uggtiueblantvar
-      - POSTGRES_DB=learnpython
+      - POSTGRES_USER=youruser
+      - POSTGRES_PASSWORD=yourpass
+      - POSTGRES_DB=yourdb
     expose:
       - 5432
     restart: unless-stopped
