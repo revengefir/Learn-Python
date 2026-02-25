@@ -35,14 +35,14 @@ async def run_code(payload: dict):
     with open(code_path, "w") as f:
         f.write(code)
 
-    # Создаем pty
+    # Executing code
     master, slave = pty.openpty()
     proc = subprocess.Popen(
         ["python3", "-u", code_path],
         stdin=slave,
         stdout=slave,
         stderr=slave,
-        preexec_fn=os.setsid  # ability to kill the program
+        preexec_fn=os.setsid  
     )
 
     sessions[session_id] = {
