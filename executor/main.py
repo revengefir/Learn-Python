@@ -82,7 +82,7 @@ async def ws_run(ws: WebSocket, session_id: str):
 
                 await ws.send_json({
                     "type": "output",
-                    "data": "\n[ERROR] Execution timeout\n"
+                    "data": "\n[ERROR] Лимит времени на исполнение программы превышен\n"
                 })
                 break
 
@@ -153,6 +153,3 @@ async def ws_run(ws: WebSocket, session_id: str):
             pass
 
         sessions.pop(session_id, None)
-
-
-
