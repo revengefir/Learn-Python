@@ -3,14 +3,15 @@ import os
 import pty
 import subprocess
 import uuid
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import select
 import signal
 
-app = FastAPI()
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +22,7 @@ app.add_middleware(
 )
 
 sessions = {}
-MAX_EXECUTION_TIME = 60  # Execution limit(in seconds)
+MAX_EXECUTION_TIME = 60
 
 
 @app.post("/run")
@@ -29,34 +30,39 @@ async def run_code(payload: dict):
     code = payload.get("code", "")
     session_id = str(uuid.uuid4())
 
-    # Saving code to the tmp
-    os.makedirs(f"/tmp/{session_id}", exist_ok=True)
-    code_path = f"/tmp/{session_id}/main.py"
+    workdir = f"/tmp/{session_id}"
+    os.makedirs(workdir, exist_ok=True)
+
+    code_path = f"{workdir}/main.py"
+
     with open(code_path, "w") as f:
         f.write(code)
 
-    # Executing code
-    master, slave = pty.openpty()
+    master_fd, slave_fd = pty.openpty()
+
     proc = subprocess.Popen(
         ["python3", "-u", code_path],
-        stdin=slave,
-        stdout=slave,
-        stderr=slave,
-        preexec_fn=os.setsid  
+        stdin=slave_fd,
+        stdout=slave_fd,
+        stderr=slave_fd,
+        cwd=workdir,
+        preexec_fn=os.setsid
     )
+
+    os.close(slave_fd)
 
     sessions[session_id] = {
         "proc": proc,
-        "pty": master,
+        "pty": master_fd,
         "start_time": asyncio.get_event_loop().time(),
-        "waiting_input": False,
+        "workdir": workdir,
     }
 
     return JSONResponse({"session_id": session_id})
 
-
 @app.websocket("/ws/run/{session_id}/")
 async def ws_run(ws: WebSocket, session_id: str):
+
     await ws.accept()
 
     if session_id not in sessions:
@@ -64,54 +70,89 @@ async def ws_run(ws: WebSocket, session_id: str):
         return
 
     session = sessions[session_id]
+
     proc = session["proc"]
     master_fd = session["pty"]
     start_time = session["start_time"]
 
     try:
         while True:
-            # Timeout check
             if asyncio.get_event_loop().time() - start_time > MAX_EXECUTION_TIME:
                 os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                await ws.send_json({"type": "output", "data": "\n[ОШИБКА] Лимит времени на исполнение превышен"})
+
+                await ws.send_json({
+                    "type": "output",
+                    "data": "\n[ERROR] Execution timeout\n"
+                })
                 break
 
-            # Output check
-            rlist, _, _ = select.select([master_fd], [], [], 0.05)
+            rlist, _, _ = select.select([master_fd], [], [], 0)
+
             if rlist:
                 try:
-                    output = os.read(master_fd, 1024).decode()
+                    output = os.read(master_fd, 65536).decode(
+                        errors="ignore"
+                    )
+
                     if output:
-                        await ws.send_json({"type": "output", "data": output})
-                        # Input check
-                        if output.strip().endswith(":"):
-                            session["waiting_input"] = True
+                        await ws.send_json({
+                            "type": "output",
+                            "data": output
+                        })
+
                 except OSError:
                     pass
 
-            # Getting user input
-            if session["waiting_input"]:
-                try:
-                    msg = await asyncio.wait_for(ws.receive_text(), timeout=0.05)
-                    os.write(master_fd, (msg + "\n").encode())
-                    session["waiting_input"] = False
-                except asyncio.TimeoutError:
-                    pass
-                except WebSocketDisconnect:
-                    break
+            try:
+                msg = await asyncio.wait_for(
+                    ws.receive_text(),
+                    timeout=0.01
+                )
 
-            # Process end check
+                os.write(master_fd, (msg + "\n").encode())
+
+            except asyncio.TimeoutError:
+                pass
+            except WebSocketDisconnect:
+                break
+
+            # =====================
+            # PROCESS EXIT
+            # =====================
             if proc.poll() is not None:
                 break
 
+            await asyncio.sleep(0.01)
+
     except WebSocketDisconnect:
         pass
+
     finally:
-        if proc.poll() is None:
-            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-        await ws.send_json({"type": "exit", "data": proc.returncode})
+        try:
+            if proc.poll() is None:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except Exception:
+            pass
+
+        await ws.send_json({
+            "type": "exit",
+            "data": proc.returncode
+        })
+
         await ws.close()
-        del sessions[session_id]
+
+        try:
+            os.close(master_fd)
+        except Exception:
+            pass
+
+        try:
+            import shutil
+            shutil.rmtree(session["workdir"], ignore_errors=True)
+        except Exception:
+            pass
+
+        sessions.pop(session_id, None)
 
 
 
