@@ -10,87 +10,151 @@
 
   <title>{{title}}</title>
 
-
-  <!-- Подгрузка BootStrap и FontAwesome -->
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<!-- Подгрузка CSS -->
+  <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="{% static "index.css" %}" />
 
+  <style>
+    body {
+      padding-top: 70px;
+      background: #f0f4f7;
+    }
+
+    .main-card {
+      border: 1px solid gray;
+      border-radius: 10px;
+      padding: 20px;
+      background: white;
+      text-align: center;
+      margin: auto;
+      max-width: 600px;
+    }
+
+    .main-card h1 {
+      font-size: 24px;
+    }
+
+    .main-card p {
+      font-size: 16px;
+      margin: 15px auto;
+      max-width: 90%;
+    }
+
+    .main-btn {
+      margin-top: 25px;
+      width: 100%;
+      font-size: 16px;
+      padding: 12px;
+    }
+
+    /* Tablet */
+    @media (min-width: 768px) {
+      .main-card {
+        padding: 30px;
+      }
+
+      .main-card h1 {
+        font-size: 28px;
+      }
+
+      .main-card p {
+        font-size: 18px;
+        max-width: 70%;
+      }
+
+      .main-btn {
+        width: auto;
+        padding: 12px 25px;
+      }
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+      .main-card {
+        max-width: 700px;
+      }
+    }
+  </style>
 
   {% if messages %}
   {% for message in messages %}
-
   <script>
     alert("{{ message }}");
   </script>
-
   {% endfor %}
   {% endif %}
-
-
 </head>
 
-<body class="container-fluid">
+<body>
 
-
-  <header class="row">
-
-    <!-- Навигация -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button class="navbar-toggle" data-toggle="collapse" data-target="#mainNavBar">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" class="styleheader" href="{% url "index" %}">Learn-Python</a>
-        </div>
-        <div class="collapse navbar-collapse" id="mainNavBar">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="{% url "index" %}"><i class="fa fa-home"></i> Главная</a></li>
-
-            {% if user.is_authenticated %}
-            {% else %}
-            <li><a href="{% url "register" %}"><span class="glyphicon glyphicon-user"></span>   Регистрация</a></li>
-            <li><a href="{% url "login" %}"><span class="glyphicon glyphicon-log-in"></span>   Вход</a></li>
-            {% endif %}
-
-          </ul>
-        </div>
+<header>
+  <!-- Navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      
+      <div class="navbar-header">
+        <button class="navbar-toggle" data-toggle="collapse" data-target="#mainNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{% url "index" %}">Learn-Python</a>
       </div>
-    </nav>
-  </header>
-  <br/>
-  <br>
-  <br>
-  <div class="row">
-    {% block start %}
-    {% if user.is_authenticated %}
-    <center>
-      <div style="border-style: solid; border-color: gray; height: 300px; width: 50%;">
-      <h1>Добро пожаловать на Learn-Python, {{user.username}}!</h1>
-      <p style="font-size: x-large; max-width: 50%;">Нажмите на кнопку ниже, дабы попасть в среду.</p>
-      <a id= "button" href="\playground" class="btn btn-success btn-lg" style="margin-top: 50px;">Перейти к практике!</a></button>
+
+      <div class="collapse navbar-collapse" id="mainNavBar">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url "index" %}"><i class="fa fa-home"></i> Главная</a></li>
+
+          {% if not user.is_authenticated %}
+          <li><a href="{% url "register" %}">
+            <span class="glyphicon glyphicon-user"></span> Регистрация
+          </a></li>
+          <li><a href="{% url "login" %}">
+            <span class="glyphicon glyphicon-log-in"></span> Вход
+          </a></li>
+          {% endif %}
+
+        </ul>
       </div>
-    </center>
-    {% else %}
-    <center>
-      <div style="border-style: solid; border-color: gray; height: 325px; width: 50%;">
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  {% block start %}
+
+  {% if user.is_authenticated %}
+    <div class="main-card">
+      <h1>Добро пожаловать, {{user.username}} </h1>
+      <p>
+        Нажмите кнопку ниже, чтобы перейти в среду программирования.
+      </p>
+      <a href="/playground" class="btn btn-success main-btn">
+        Перейти к практике
+      </a>
+    </div>
+
+  {% else %}
+    <div class="main-card">
       <h1>Learn-Python</h1>
-      <p style="font-size: x-large; max-width: 50%;">Простой вебсайт, предоставляющий среду для практики языка программирования Python.</p>
-      <a id= "button" href="{% url "register" %}" class="btn btn-success btn-lg" style="margin-top: 50px;">Зарегистрироваться</a></button>
-      </div>
-    </center>
-    {% endif %}
-    {% endblock %}
-  </div>
-</body>
+      <p>
+        Простой веб-сайт, предоставляющий среду для практики языка Python.
+      </p>
+      <a href="{% url "register" %}" class="btn btn-success main-btn">
+        Зарегистрироваться
+      </a>
+    </div>
+  {% endif %}
 
+  {% endblock %}
+</div>
+
+</body>
 </html>
