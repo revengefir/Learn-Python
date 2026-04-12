@@ -116,9 +116,7 @@ async def ws_run(ws: WebSocket, session_id: str):
             except WebSocketDisconnect:
                 break
 
-            # =====================
-            # PROCESS EXIT
-            # =====================
+
             if proc.poll() is not None:
                 break
 
